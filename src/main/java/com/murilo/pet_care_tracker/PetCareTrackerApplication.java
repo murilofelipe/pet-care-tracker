@@ -1,0 +1,13 @@
+package com.murilo.pet_care_tracker;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class PetCareTrackerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(PetCareTrackerApplication.class, args);
+	}
+
+}
