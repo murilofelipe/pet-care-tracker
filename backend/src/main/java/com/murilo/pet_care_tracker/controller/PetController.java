@@ -1,5 +1,9 @@
 package com.murilo.pet_care_tracker.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap; // Caso use HashMap
+
 import com.murilo.pet_care_tracker.dto.PetRequestDTO;
 import com.murilo.pet_care_tracker.dto.PetResponseDTO;
 import com.murilo.pet_care_tracker.service.PetService;
@@ -13,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/pets")
+@CrossOrigin(origins = "http://localhost:8082") // Garante o acesso do Vue
 @RequiredArgsConstructor
 public class PetController {
 
@@ -30,4 +35,13 @@ public class PetController {
         List<PetResponseDTO> pets = petService.listarTodos();
         return ResponseEntity.ok(pets); // Retorna 200 (OK)
     }
+
+    /*
+     * @GetMapping
+     * public List<Map<String, String>> listarTodos() {
+     * return List.of(
+     * Map.of("id", "1", "nome", "Snow", "especie", "Cão (Pastor da Mantiqueira)"),
+     * Map.of("id", "2", "nome", "Aura", "especie", "Gato"));
+     * }
+     */
 }

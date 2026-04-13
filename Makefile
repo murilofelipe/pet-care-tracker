@@ -1,17 +1,21 @@
-.PHONY: help up down logs-api logs-db test clean run-local
+.PHONY: help up down logs-api logs-db test clean clean-all run-local install-frontend dev-frontend
+
+# --- Variáveis ---
+FRONTEND_DIR = frontend
+BACKEND_DIR = backend
 
 # Mostra esta mensagem de ajuda por padrão
 help:
-	@echo "🛠️  Comandos disponíveis para o Pet Care Tracker:"
-	@echo "  make up          - Compila a API e sobe todo o ecossistema (API + DB) via Docker"
-	@echo "  make down        - Derruba todos os contêineres e redes do projeto"
-	@echo "  make logs-api    - Acompanha os logs da API Spring Boot em tempo real"
-	@echo "  make logs-db     - Acompanha os logs do banco de dados PostgreSQL"
-	@echo "  make test        - Executa a suíte de testes unitários e de integração (Maven)"
-	@echo "  make clean       - Limpa a pasta target/ local"
-	@echo "  make run-local   - Roda a API localmente fora do Docker (requer make db-up primeiro)"
+	@echo "🛠️  Comandos do Pet Care Tracker (Full-stack):"
+	@echo "  make up               - Sobe todo o ecossistema (API + Vue + DB) via Docker"
+	@echo "  make down             - Derruba todos os contêineres e redes"
+	@echo "  make logs-api         - Logs da API Spring Boot"
+	@echo "  make install-all      - Instala dependências do front e prepara o back"
+	@echo "  make dev-frontend     - Roda o Vue localmente (Vite)"
+	@echo "  make test             - Executa testes do Backend"
+	@echo "  make clean-all        - Limpa builds do Java e node_modules do Vue"
 
-# --- Comandos do Docker Compose (Ecossistema Completo) ---
+# --- Docker Compose (Fluxo Principal) ---
 
 up:
 	docker compose up --build -d
@@ -23,15 +27,36 @@ logs-api:
 	docker compose logs -f petcare-api
 
 logs-db:
-	docker compose logs -f postgres-db
+	docker compose logs -f petcare-db
 
-# --- Comandos de Desenvolvimento Local (Maven) ---
+# --- Desenvolvimento Backend (Java 21) ---
 
-test:
-	./mvnw test
+test: check-java
+	cd $(BACKEND_DIR) && ./mvnw test
 
-clean:
-	./mvnw clean
+clean: check-java
+	cd $(BACKEND_DIR) && ./mvnw clean
 
-run-local:
-	./mvnw spring-boot:run
+run-local: check-java
+	cd $(BACKEND_DIR) && ./mvnw spring-boot:run
+
+check-java:
+	@java -version 2>&1 | grep -q "21" || (echo "Erro: Requer Java 21 " && exit 1)
+
+# --- Desenvolvimento Frontend (Vue 3 + Vite) ---
+
+install-frontend:
+	cd $(FRONTEND_DIR) && npm install
+
+dev-frontend:
+	cd $(FRONTEND_DIR) && npm run dev
+
+install-all: install-frontend
+	cd $(BACKEND_DIR) && ./mvnw install -DskipTests
+
+# --- Limpeza Total ---
+
+clean-all:
+	cd $(BACKEND_DIR) && ./mvnw clean
+	cd $(FRONTEND_DIR) && rm -rf dist node_modules
+	@echo "✨ Limpeza completa realizada."

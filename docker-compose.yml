@@ -1,10 +1,12 @@
 services:
 
   petcare-api:
-    build: .
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: petcare-api
     ports:
-      - "8080:8080"
+      - "8080:8081"
     environment:
       # Sobrescreve: spring.datasource.url
       # Usa o nome do contêiner do banco (postgres-db) em vez de localhost
@@ -17,7 +19,15 @@ services:
     # Diz ao Docker para só subir a API depois que o banco estiver rodando
     depends_on:
       - postgres-db
-  
+
+  frontend-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+      - "8082:80"
+
   postgres-db:
     image: postgres:16-alpine
     container_name: petcare-db
